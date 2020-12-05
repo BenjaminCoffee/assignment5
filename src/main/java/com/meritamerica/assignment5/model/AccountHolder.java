@@ -3,13 +3,26 @@ package com.meritamerica.assignment5.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotBlank;
+
 public class AccountHolder {
 	static int nextId = 1;
 	
 	int id;
+	@NotNull(message = "Cannot be Blank")
+	@NotBlank(message = "Cannot be Blank")
 	String firstName;
+	
 	String middleName;
+	
+	@NotBlank(message = "Cannot be Blank")
+	@NotNull(message = "Cannot be Blank")
 	String lastName;
+	
+	@NotBlank(message = "Cannot be Blank")
+	@NotNull(message = "Cannot be Blank")
 	String ssn;
 	
 	List<CheckingAccount> checkingAccs = new ArrayList<CheckingAccount>();

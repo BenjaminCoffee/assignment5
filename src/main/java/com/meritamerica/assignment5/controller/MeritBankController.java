@@ -3,17 +3,18 @@ package com.meritamerica.assignment5.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.meritamerica.assignment5.exceptions.NoSuchResourceFoundExcepetion;
+import com.meritamerica.assignment5.exceptions.BalanceException;
+import com.meritamerica.assignment5.exceptions.NotFoundException;
 import com.meritamerica.assignment5.model.AccountHolder;
 import com.meritamerica.assignment5.model.CDAccounts;
 import com.meritamerica.assignment5.model.CDOffering;
@@ -29,68 +30,115 @@ public class MeritBankController {
 	
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping(value = "/AccountHolders")
-	public AccountHolder addAcc(@RequestBody AccountHolder acc){
+	public AccountHolder addAcc(@RequestBody @Valid AccountHolder acc){
 		accHolders.add(acc);
 		return acc;
 	}
+	
 	@GetMapping(value = "/AccountHolders")
 	 public List<AccountHolder> getAccs() {
 		 return accHolders;
 	 }
 	
 	@GetMapping(value = "/AccountHolders/{id}")
-	public AccountHolder getAccById(@PathVariable int id) throws NoSuchResourceFoundExcepetion{
+	public AccountHolder getAccById(@PathVariable int id) throws NotFoundException{
 		if(id > accHolders.size()) {
 			
-			throw new NoSuchResourceFoundExcepetion("invalid id");
+			throw new NotFoundException("id does not exist");
 		}
 		
 		return accHolders.get(id - 1);
 	}
 	
+	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping(value = "/AccountHolders/{id}/CheckingAccounts")
-	public CheckingAccount addCheckingByAccId(@PathVariable int id, @RequestBody CheckingAccount acc) {
+	public CheckingAccount addCheckingByAccId(@PathVariable int id, @RequestBody CheckingAccount acc) throws NotFoundException, BalanceException {
+		if(id > accHolders.size()) {
+			
+			throw new NotFoundException("id does not exist");
+		}
+		if(acc.getBalance() < 0) {
+			throw new BalanceException("Balance cannot be less than 0");
+		}
+		if(acc.getBalance() > 250000) {
+			throw new BalanceException("Balance cannot be greater than 250,000");
+		}
 		accHolders.get(id - 1).addChecking(acc);
 		return acc;
 	}
 	
 	@GetMapping(value = "/AccountHolders/{id}/CheckingAccounts")
-	public List<CheckingAccount> getCheckingByAccountId(@PathVariable int id) {
+	public List<CheckingAccount> getCheckingByAccountId(@PathVariable int id) throws NotFoundException {
+		if(id > accHolders.size()) {
+			
+			throw new NotFoundException("id does not exist");
+		}
 		return accHolders.get(id - 1).getCheckingAccount();
 	}
 	
-	
+	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping(value = "/AccountHolders/{id}/SavingsAccounts")
-	public SavingsAccount addSavingsByAccId(@PathVariable int id, @RequestBody SavingsAccount acc) {
+	public SavingsAccount addSavingsByAccId(@PathVariable int id, @RequestBody SavingsAccount acc) throws NotFoundException, BalanceException{
+		if(id > accHolders.size()) {
+			
+			throw new NotFoundException("id does not exist");
+		}
+		if(acc.getBalance() < 0) {
+			throw new BalanceException("Balance cannot be less than 0");
+		}
+		if(acc.getBalance() > 250000) {
+			throw new BalanceException("Balance cannot be greater than 250,000");
+		}
 		accHolders.get(id - 1).addSavings(acc);
 		return acc;
 	}
 	
 	@GetMapping(value = "/AccountHolders/{id}/SavingsAccounts")
-	public List<SavingsAccount> getSavingsByAccountId(@PathVariable int id) {
+	public List<SavingsAccount> getSavingsByAccountId(@PathVariable int id) throws NotFoundException{
+		if(id > accHolders.size()) {
+			
+			throw new NotFoundException("id does not exist");
+		}
 		return accHolders.get(id - 1).getSavingsAccount();
 	}
 	
-	
+	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping(value = "/AccountHolders/{id}/CDAccounts")
-	public CDAccounts addCDAccountByAccId(@PathVariable int id, @RequestBody CDAccounts acc) {
+	public CDAccounts addCDAccountByAccId(@PathVariable int id, @RequestBody CDAccounts acc) throws NotFoundException, BalanceException {
+		if(id > accHolders.size()) {
+			
+			throw new NotFoundException("id does not exist");
+		}
+		if(acc.getBalance() < 0) {
+			throw new BalanceException("Balance cannot be less than 0");
+		}
+		if(acc.getInterestRate() <= 0 || acc.getInterestRate() >= 1) {
+			throw new BalanceException("Interest rate cannot be less than 0, cannot be greater than 1");
+		}
+		if(acc.getTerm() < 1) {
+			throw new BalanceException("Term cannot be less than 1");
+		}
 		accHolders.get(id - 1).addCDAccounts(acc);
 		return acc;
 	}
 	
 	@GetMapping(value = "/AccountHolders/{id}/CDAccounts")
-	public List<CDAccounts> getCDAccountsByAccountId(@PathVariable int id) {
+	public List<CDAccounts> getCDAccountsByAccountId(@PathVariable int id) throws NotFoundException {
+		if(id > accHolders.size()) {
+			
+			throw new NotFoundException("id does not exist");
+		}
 		return accHolders.get(id - 1).getCDAccount();
 	}
 	
 	
-	@PostMapping(value = "/AccountHolders/CDOfferings")
+	@PostMapping(value = "/CDOfferings")
 	public CDOffering addCDOffering(@RequestBody CDOffering off) {
 		cdOfferings.add(off);
 		return off;
 	}
 	
-	@PostMapping(value = "/AccountHolders/CDOfferings")
+	@GetMapping(value = "/CDOfferings")
 	public List<CDOffering> getCDOfferings() {
 		return cdOfferings;
 	}
