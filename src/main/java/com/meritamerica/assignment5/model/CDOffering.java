@@ -1,12 +1,16 @@
 package com.meritamerica.assignment5.model;
 
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotEmpty;
+
 public class CDOffering {
-	int term;
-	double interestRate;
+	@NotNull(message = "no term found")
+	Integer term;
+	@NotNull(message = "no interest rate found")
+	Double interestRate;
 	
 	public CDOffering() {
-		this.interestRate = 0;
-		this.term = 0;
 	}
 
 	public int getTerm() {

@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+
 public class AccountHolder {
 	static int nextId = 1;
 	
@@ -24,6 +25,7 @@ public class AccountHolder {
 	@NotBlank(message = "Cannot be Blank")
 	@NotNull(message = "Cannot be Blank")
 	String ssn;
+	
 	
 	List<CheckingAccount> checkingAccs = new ArrayList<CheckingAccount>();
 	List<SavingsAccount> savingsAccs = new ArrayList<SavingsAccount>();
@@ -106,7 +108,6 @@ public class AccountHolder {
 	public void setSsn(String ssn) {
 		this.ssn = ssn;
 	}
-	
 	
 	
 }

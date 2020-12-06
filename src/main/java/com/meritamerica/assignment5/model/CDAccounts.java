@@ -1,15 +1,22 @@
 package com.meritamerica.assignment5.model;
 
+import javax.validation.constraints.NotNull;
+
+
+
 public class CDAccounts {
 	static int nextId = 1;
 	long accountNumber;
+	@NotNull(message = "no balance found")
 	double balance;
+	@NotNull(message = "no interest rate found")
 	double interestRate;
+	@NotNull(message = "no term found")
 	int term;
 	long openedOn;
 	
 	public CDAccounts() {
-		this.interestRate = .025;
+		this.interestRate = 0;
 		this.term = 0;
 		this.balance = 0;
 		this.accountNumber = nextId++;

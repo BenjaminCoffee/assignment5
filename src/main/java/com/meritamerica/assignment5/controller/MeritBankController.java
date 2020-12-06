@@ -60,7 +60,14 @@ public class MeritBankController {
 		if(acc.getBalance() < 0) {
 			throw new BalanceException("Balance cannot be less than 0");
 		}
-		if(acc.getBalance() > 250000) {
+		int cBalance = 0;
+		List<CheckingAccount> temp = new ArrayList<CheckingAccount>();
+		temp = accHolders.get(id).getCheckingAccount();
+		for(int i = 0; i < temp.size(); i++) {
+			cBalance += temp.get(i).getBalance();
+		}
+		
+		if(cBalance > 250000) {
 			throw new BalanceException("Balance cannot be greater than 250,000");
 		}
 		accHolders.get(id - 1).addChecking(acc);
@@ -86,7 +93,13 @@ public class MeritBankController {
 		if(acc.getBalance() < 0) {
 			throw new BalanceException("Balance cannot be less than 0");
 		}
-		if(acc.getBalance() > 250000) {
+		int cBalance = 0;
+		List<SavingsAccount> temp = new ArrayList<SavingsAccount>();
+		temp = accHolders.get(id - 1).getSavingsAccount();
+		for(int i = 0; i < temp.size(); i++) {
+			cBalance += temp.get(i).getBalance();
+		}
+		if(cBalance > 250000) {
 			throw new BalanceException("Balance cannot be greater than 250,000");
 		}
 		accHolders.get(id - 1).addSavings(acc);
@@ -104,7 +117,7 @@ public class MeritBankController {
 	
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping(value = "/AccountHolders/{id}/CDAccounts")
-	public CDAccounts addCDAccountByAccId(@PathVariable int id, @RequestBody CDAccounts acc) throws NotFoundException, BalanceException {
+	public CDAccounts addCDAccountByAccId(@PathVariable int id, @RequestBody @Valid CDAccounts acc) throws NotFoundException, BalanceException {
 		if(id > accHolders.size()) {
 			
 			throw new NotFoundException("id does not exist");
@@ -131,9 +144,15 @@ public class MeritBankController {
 		return accHolders.get(id - 1).getCDAccount();
 	}
 	
-	
+	@ResponseStatus(HttpStatus.CREATED)	
 	@PostMapping(value = "/CDOfferings")
-	public CDOffering addCDOffering(@RequestBody CDOffering off) {
+	public CDOffering addCDOffering(@RequestBody @Valid CDOffering off) throws BalanceException {
+		if(off.getTerm() < 1) {
+			throw new BalanceException("Term cannot be less than 1");
+		}
+		if(off.getInterestRate() <= 0 || off.getInterestRate() >= 1) {
+			throw new BalanceException("Interest rate cannot be less than 0, cannot be greater than 1");
+		}
 		cdOfferings.add(off);
 		return off;
 	}
